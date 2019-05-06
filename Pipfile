@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-timeout = "*"
+pytest-cov = "*"
+astpretty = "*"
+
+[packages]
+click = "*"
+daiquiri = "*"
+attr = "*"
+
+[requires]
+python_version = "3.6"
