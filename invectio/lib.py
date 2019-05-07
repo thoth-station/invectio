@@ -140,7 +140,7 @@ class InvectioVisitor(ast.NodeVisitor):
         return result
 
 
-def gather_library_usage(path: str) -> dict:
+def gather_library_usage(path: str, *, ignore_errors: bool = False) -> dict:
     """Find all sources in the given path and statically extract any library call."""
     if os.path.isfile(path):
         files = (path,)
@@ -154,7 +154,14 @@ def gather_library_usage(path: str) -> dict:
     for python_file in files:
         python_file_path = Path(python_file)
         _LOGGER.debug("Parsing file %r", str(python_file_path.absolute()))
-        file_ast = ast.parse(python_file_path.read_text())
+        try:
+            file_ast = ast.parse(python_file_path.read_text())
+        except Exception:
+            if ignore_errors:
+                _LOGGER.exception("Failed to parse Python file %r", python_file)
+                continue
+
+            raise
 
         visitor = InvectioVisitor()
         visitor.visit(file_ast)

@@ -58,8 +58,13 @@ def _print_version(ctx, _, value):
     expose_value=False,
     help="Print Invectio version and exit.",
 )
+@click.option(
+    "--ignore-errors",
+    is_flag=True,
+    help="Ignore syntax or parsing errors for Python files.",
+)
 @click.argument("path")
-def cli(ctx=None, verbose: bool = False, path: str = None):
+def cli(ctx=None, verbose: bool = False, path: str = None, ignore_errors: bool = False):
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
         ctx.auto_envvar_prefix = "INVECTIO"
@@ -70,7 +75,7 @@ def cli(ctx=None, verbose: bool = False, path: str = None):
     _LOGGER.debug("Debug mode is on")
     _LOGGER.debug("Version: %s", __version__)
 
-    result = gather_library_usage(path)
+    result = gather_library_usage(path, ignore_errors=ignore_errors)
     click.echo(json.dumps(result, indent=2, sort_keys=True))
 
 
