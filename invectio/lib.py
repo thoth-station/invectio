@@ -24,6 +24,7 @@ import os
 import attr
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE"))) else logging.INFO)
 
 
 @attr.s(slots=True)
