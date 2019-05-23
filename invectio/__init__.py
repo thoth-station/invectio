@@ -17,4 +17,10 @@
 
 """Statically analyze sources and extract information about used library parts in Python applications."""
 
+__version__ = "0.0.2"
+__author__ = "Fridolin Pokorny"
+__email__ = "fridex.devel@gmail.com"
+__title__ = "invectio"
+
+
 from .lib import gather_library_usage
