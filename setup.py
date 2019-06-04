@@ -34,7 +34,19 @@ class Test(TestCommand):
         sys.exit(pytest.main(self.pytest_args))
 
 
+def get_version():
+    with open(os.path.join('invectio', '__init__.py')) as f:
+        content = f.readlines()
+
+    for line in content:
+        if line.startswith('__version__ ='):
+            # dirty, remove trailing and leading chars
+            return line.split(' = ')[1][1:-2]
+    raise ValueError("No version identifier found")
+
+
 setup(
     install_requires=(Path(HERE) / "requirements.txt").read_text(),
     cmdclass={"test": Test},
+    version=get_version(),
 )
