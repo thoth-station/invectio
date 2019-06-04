@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""Statically analyze sources and extract information about used library parts in Python applications."""
 
 __version__ = "0.0.2"
 __author__ = "Fridolin Pokorny"

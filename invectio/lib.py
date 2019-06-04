@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""A library part of Invectio for static analysis of Python sources."""
+
 from pathlib import Path
 import ast
 import glob
