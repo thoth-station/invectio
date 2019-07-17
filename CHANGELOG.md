@@ -13,3 +13,8 @@
 * Introduce env-based configuration for library to enable logging
 * Fix installation when there is missing actual package
 * Import of initial implementation
+
+## Release 0.0.4 (2019-07-17T14:14:57)
+* Do not use setup.cfg, use setup.py
+* :pushpin: Automatic update of dependency pytest from 5.0.0 to 5.0.1
+* :pushpin: Automatic update of dependency pytest from 4.6.3 to 5.0.0
