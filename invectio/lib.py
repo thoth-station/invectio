@@ -25,6 +25,9 @@ import os
 
 import attr
 
+from invectio import __version__ as invectio_version
+
+
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO)
 
@@ -170,4 +173,7 @@ def gather_library_usage(path: str, *, ignore_errors: bool = False) -> dict:
 
         report[str(python_file)] = visitor.get_module_report()
 
-    return report
+    return {
+        "report": report,
+        "version": invectio_version,
+    }

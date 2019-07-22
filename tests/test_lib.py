@@ -19,6 +19,7 @@ import os
 import pytest
 
 from invectio import gather_library_usage
+from invectio import __version__ as invectio_version
 
 
 class TestInvectio:
@@ -26,10 +27,17 @@ class TestInvectio:
     def _get_test_path(cls, test_case_name: str) -> str:
         return str(os.path.join("tests", "data", test_case_name))
 
+    def test_version(self):
+        file_path = self._get_test_path("empty.py")
+        result = gather_library_usage(file_path)
+        assert "version" in result
+        assert result["version"] == invectio_version
+
     def test_empty(self):
         file_path = self._get_test_path("empty.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {}}
+        assert "report" in result
+        assert result["report"] == {file_path: {}}
 
     def test_no_files(self):
         file_path = self._get_test_path("somenonexistingfileorfilepath")
@@ -39,39 +47,46 @@ class TestInvectio:
     def test_app_1(self):
         file_path = self._get_test_path("app_1.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_app_2(self):
         file_path = self._get_test_path("app_2.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_app_3(self):
         file_path = self._get_test_path("app_3.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_app_4(self):
         file_path = self._get_test_path("app_4.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_app_5(self):
         file_path = self._get_test_path("app_5.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_app_6(self):
         file_path = self._get_test_path("app_6.py")
         result = gather_library_usage(file_path)
-        assert result == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert "report" in result
+        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
 
     def test_lstm(self):
         file_path = self._get_test_path("lstm.py")
         result = gather_library_usage(file_path)
-        assert file_path in result
-        assert len(result.keys()) == 1
-        assert result[file_path] == {
+        assert "report" in result
+        assert file_path in result["report"]
+        assert len(result["report"].keys()) == 1
+        assert result["report"][file_path] == {
             "tensorflow": [
                 "tensorflow.Session",
                 "tensorflow.Variable",
@@ -97,7 +112,8 @@ class TestInvectio:
     def test_project_dir(self):
         project_path = self._get_test_path("project_dir")
         result = gather_library_usage(project_path)
-        assert result == {
+        assert "report" in result
+        assert result["report"] == {
             "tests/data/project_dir/main.py": {
                 "flask": ["flask.Flask"],
                 "proj": ["proj.get_model"],
