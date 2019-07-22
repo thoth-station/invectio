@@ -18,3 +18,6 @@
 * Do not use setup.cfg, use setup.py
 * :pushpin: Automatic update of dependency pytest from 5.0.0 to 5.0.1
 * :pushpin: Automatic update of dependency pytest from 4.6.3 to 5.0.0
+
+## Release 0.0.5 (2019-07-22T20:19:43)
+* Add version information to invectio reports
