@@ -19,6 +19,7 @@ import os
 import pytest
 
 from invectio import gather_library_usage
+from invectio import get_standard_imports
 from invectio import __version__ as invectio_version
 
 
@@ -129,4 +130,29 @@ class TestInvectio:
             "tests/data/project_dir/proj/utils.py": {
                 "datetime": ["datetime.datetime.utcnow"]
             },
+        }
+
+    def test_get_standard_imports(self):
+        standard_imports = get_standard_imports()
+        assert isinstance(standard_imports, set)
+        assert len(standard_imports) > 0
+        assert "json" in standard_imports
+        assert "collections" in standard_imports
+
+    def test_standard_imports_detection(self):
+        file_path = self._get_test_path("app_7.py")
+
+        result = gather_library_usage(file_path, without_standard_imports=True)
+        assert "report" in result
+        assert "version" in result
+        assert file_path in result["report"]
+        assert result["report"][file_path] == {}
+
+        result = gather_library_usage(file_path, without_standard_imports=False)
+        assert "report" in result
+        assert "version" in result
+        assert file_path in result["report"]
+        assert result["report"][file_path] == {
+            "collections": ["collections.deque"],
+            "datetime": ["datetime.datetime.utcnow"]
         }
