@@ -22,6 +22,8 @@ import ast
 import glob
 import logging
 import os
+import distutils.sysconfig as sysconfig
+from typing import Set
 
 import attr
 
@@ -145,7 +147,24 @@ class InvectioVisitor(ast.NodeVisitor):
         return result
 
 
-def gather_library_usage(path: str, *, ignore_errors: bool = False) -> dict:
+def get_standard_imports() -> Set[str]:
+    """Get Python's standard imports."""
+    result = set()
+
+    std_lib = sysconfig.get_python_lib(standard_lib=True)
+    for name in os.listdir(std_lib):
+        if name in ("site-packages", "__pycache__"):
+            continue
+
+        if name.endswith(".py"):
+            name = name[:-len(".py")]
+
+        result.add(name)
+
+    return result
+
+
+def gather_library_usage(path: str, *, ignore_errors: bool = False, without_standard_imports: bool = False) -> dict:
     """Find all sources in the given path and statically extract any library call."""
     if os.path.isfile(path):
         files = (path,)
@@ -154,6 +173,10 @@ def gather_library_usage(path: str, *, ignore_errors: bool = False) -> dict:
 
     if not files:
         raise FileNotFoundError(f"No files to process for {str(path)!r}")
+
+    standard_imports = set()
+    if without_standard_imports:
+        standard_imports = get_standard_imports()
 
     report = {}
     for python_file in files:
@@ -171,7 +194,16 @@ def gather_library_usage(path: str, *, ignore_errors: bool = False) -> dict:
         visitor = InvectioVisitor()
         visitor.visit(file_ast)
 
-        report[str(python_file)] = visitor.get_module_report()
+        file_report = {}
+        module_report = visitor.get_module_report()
+        for module_import, symbols in module_report.items():
+            if without_standard_imports and module_import in standard_imports:
+                _LOGGER.debug("Omitting standard library import %r", module_import)
+                continue
+
+            file_report[module_import] = symbols
+
+        report[str(python_file)] = file_report
 
     return {
         "report": report,
