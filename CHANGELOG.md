@@ -21,3 +21,6 @@
 
 ## Release 0.0.5 (2019-07-22T20:19:43)
 * Add version information to invectio reports
+
+## Release 0.0.6 (2019-08-06T13:07:06)
+* Detection of Python's standard libraries
