@@ -156,3 +156,27 @@ class TestInvectio:
             "collections": ["collections.deque"],
             "datetime": ["datetime.datetime.utcnow"]
         }
+
+    def test_without_builtin_and_standard_imports(self):
+        file_path = self._get_test_path("app_8.py")
+
+        result = gather_library_usage(file_path, without_standard_imports=True, without_builtin_imports=True)
+
+        assert "version" in result
+        assert "report" in result
+        assert file_path in result["report"]
+        assert result["report"][file_path] == {'tensorflow': ['tensorflow.python.keras.layers.LSTM']}
+
+    def test_without_builtin_imports(self):
+        file_path = self._get_test_path("app_8.py")
+
+        result = gather_library_usage(file_path, without_standard_imports=False, without_builtin_imports=True)
+
+        assert "version" in result
+        assert "report" in result
+        assert file_path in result["report"]
+        assert {k: set(v) for k, v in result["report"][file_path].items()} == {
+            "collections": {"collections.deque"},
+            "signal": {"signal.SIGKILL", "signal.signal"},
+            "tensorflow": {"tensorflow.python.keras.layers.LSTM"},
+        }
