@@ -70,13 +70,19 @@ def _print_version(ctx, _, value):
     is_flag=True,
     help="Do not report usage of Python's standard library.",
 )
+@click.option(
+    "--without-builtin-imports/--with-builtin-imports",
+    is_flag=True,
+    help="Do not report usage of Python's builtins.",
+)
 @click.argument("path")
 def cli(
-        ctx=None,
-        verbose: bool = False,
-        path: str = None,
-        ignore_errors: bool = False,
-        without_standard_imports: bool = False
+    ctx=None,
+    verbose: bool = False,
+    path: str = None,
+    ignore_errors: bool = False,
+    without_standard_imports: bool = False,
+    without_builtin_imports: bool = False,
 ):
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
@@ -92,6 +98,7 @@ def cli(
         path,
         ignore_errors=ignore_errors,
         without_standard_imports=without_standard_imports,
+        without_builtin_imports=without_builtin_imports,
     )
     click.echo(json.dumps(result, indent=2, sort_keys=True))
 

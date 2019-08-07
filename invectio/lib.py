@@ -22,6 +22,7 @@ import ast
 import glob
 import logging
 import os
+import sys
 import distutils.sysconfig as sysconfig
 from typing import Set
 
@@ -164,7 +165,13 @@ def get_standard_imports() -> Set[str]:
     return result
 
 
-def gather_library_usage(path: str, *, ignore_errors: bool = False, without_standard_imports: bool = False) -> dict:
+def gather_library_usage(
+    path: str,
+    *,
+    ignore_errors: bool = False,
+    without_standard_imports: bool = False,
+    without_builtin_imports: bool = False
+) -> dict:
     """Find all sources in the given path and statically extract any library call."""
     if os.path.isfile(path):
         files = (path,)
@@ -177,6 +184,10 @@ def gather_library_usage(path: str, *, ignore_errors: bool = False, without_stan
     standard_imports = set()
     if without_standard_imports:
         standard_imports = get_standard_imports()
+
+    builtin_imports = set()
+    if without_builtin_imports:
+        builtin_imports = set(sys.builtin_module_names)
 
     report = {}
     for python_file in files:
@@ -199,6 +210,10 @@ def gather_library_usage(path: str, *, ignore_errors: bool = False, without_stan
         for module_import, symbols in module_report.items():
             if without_standard_imports and module_import in standard_imports:
                 _LOGGER.debug("Omitting standard library import %r", module_import)
+                continue
+
+            if without_builtin_imports and module_import in builtin_imports:
+                _LOGGER.debug("Omitting builtin import %r", module_import)
                 continue
 
             file_report[module_import] = symbols
