@@ -24,3 +24,7 @@
 
 ## Release 0.0.6 (2019-08-06T13:07:06)
 * Detection of Python's standard libraries
+
+## Release 0.0.7 (2019-08-07T10:46:35)
+* Introduce without-builtin-imports option
+* :pushpin: Automatic update of dependency daiquiri from 1.5.0 to 1.6.0
