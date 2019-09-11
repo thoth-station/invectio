@@ -8,6 +8,7 @@ pytest = "*"
 pytest-timeout = "*"
 pytest-cov = "*"
 astpretty = "*"
+pytest-mypy = "*"
 
 [packages]
 click = "*"
