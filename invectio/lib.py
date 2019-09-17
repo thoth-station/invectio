@@ -98,7 +98,7 @@ class InvectioVisitor(ast.NodeVisitor):
         while not isinstance(item, ast.Name):
             if isinstance(item, ast.Attribute):
                 attrs.append(item.attr)
-                item = item.value
+                item = item.value  # type: ignore
             else:
                 _LOGGER.debug("Omitting node of type %r", item.__class__.__name__)
                 return
@@ -174,18 +174,18 @@ def gather_library_usage(
 ) -> dict:
     """Find all sources in the given path and statically extract any library call."""
     if os.path.isfile(path):
-        files = (path,)
+        files = list((path,))
     else:
         files = glob.glob(f"{path}/**/*.py", recursive=True)
 
     if not files:
         raise FileNotFoundError(f"No files to process for {str(path)!r}")
 
-    standard_imports = set()
+    standard_imports: Set[str] = set()
     if without_standard_imports:
         standard_imports = get_standard_imports()
 
-    builtin_imports = set()
+    builtin_imports: Set[str] = set()
     if without_builtin_imports:
         builtin_imports = set(sys.builtin_module_names)
 
