@@ -9,6 +9,7 @@ pytest-timeout = "*"
 pytest-cov = "*"
 astpretty = "*"
 pytest-mypy = "*"
+typeshed = "*"
 
 [packages]
 click = "*"
