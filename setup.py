@@ -24,6 +24,7 @@ class Test(TestCommand):
             "-l",
             "-s",
             "-vv",
+            "invectio",
         ]
 
     def finalize_options(self):

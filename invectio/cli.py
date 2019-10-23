@@ -77,9 +77,9 @@ def _print_version(ctx, _, value):
 )
 @click.argument("path")
 def cli(
-    ctx=None,
+    ctx,
+    path: str,
     verbose: bool = False,
-    path: str = None,
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
