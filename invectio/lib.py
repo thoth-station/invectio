@@ -25,6 +25,10 @@ import os
 import sys
 import distutils.sysconfig as sysconfig
 from typing import Set
+from typing import Dict
+from typing import List
+from typing import Any
+from typing import Optional
 
 import attr
 
@@ -39,9 +43,9 @@ _LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) el
 class InvectioVisitor(ast.NodeVisitor):
     """Visitor for capturing imports, nodes and relevant parts to be reported by Invectio."""
 
-    imports = attr.ib(type=dict, default=attr.Factory(dict))
-    imports_from = attr.ib(type=dict, default=attr.Factory(dict))
-    usage = attr.ib(type=dict, default=attr.Factory(dict))
+    imports = attr.ib(type=Dict[str, str], default=attr.Factory(dict))
+    imports_from = attr.ib(type=Dict[str, Dict[str, Optional[str]]], default=attr.Factory(dict))
+    usage = attr.ib(type=Dict[str, Set[str]], default=attr.Factory(dict))
 
     def visit_Import(self, import_node: ast.Import) -> None:
         """Visit `import` statements and capture imported modules/names."""
@@ -110,7 +114,7 @@ class InvectioVisitor(ast.NodeVisitor):
         """Visit a name node in ast."""
         self._maybe_mark_usage(name_name.id, [])
 
-    def _maybe_mark_usage(self, item_id: str, attrs: list) -> None:
+    def _maybe_mark_usage(self, item_id: str, attrs: List[str]) -> None:
         """Mark usage of an attribute."""
         all_import_types = [item_id]
         for attr_item in attrs:
@@ -118,10 +122,10 @@ class InvectioVisitor(ast.NodeVisitor):
 
         for import_type in all_import_types:
             if import_type in self.imports_from:
-                module = self.imports_from[item_id]["module"].split(".", maxsplit=1)[0]
+                module = self.imports_from[item_id]["module"].split(".", maxsplit=1)[0]  # type: ignore
 
                 used = self.imports_from[item_id]["module"]
-                used += "." + self.imports_from[item_id]["name"]
+                used += "." + self.imports_from[item_id]["name"]  # type: ignore
                 if attrs:
                     used += "." + ".".join(attrs)
 
@@ -137,7 +141,7 @@ class InvectioVisitor(ast.NodeVisitor):
                 used = module + "." + ".".join(attrs)
                 self.usage[module].add(used)
 
-    def get_module_report(self) -> dict:
+    def get_module_report(self) -> Dict[str, List[str]]:
         """Get raw module report after the library scan discovery."""
         # Convert sets to lists to make them serializable.
 
@@ -171,7 +175,7 @@ def gather_library_usage(
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False
-) -> dict:
+) -> Dict[str, Any]:
     """Find all sources in the given path and statically extract any library call."""
     if os.path.isfile(path):
         files = list((path,))

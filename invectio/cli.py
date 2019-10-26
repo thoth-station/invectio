@@ -34,7 +34,7 @@ daiquiri.setup(level=logging.INFO)
 _LOGGER = logging.getLogger(__title__)
 
 
-def _print_version(ctx, _, value):
+def _print_version(ctx, _, value):  # type: ignore
     """Print Invectio version and exit."""
     if not value or ctx.resilient_parsing:
         return
@@ -77,13 +77,13 @@ def _print_version(ctx, _, value):
 )
 @click.argument("path")
 def cli(
-    ctx,
+    ctx: click.Context,
     path: str,
     verbose: bool = False,
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
-):
+) -> None:
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
         ctx.auto_envvar_prefix = "INVECTIO"
