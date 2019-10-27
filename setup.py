@@ -71,6 +71,7 @@ setup(
     ],
     keywords="ast source code analysis thoth library",
     packages=find_packages(),
+    package_data={"invectio":  ["py.typed"]},
     entry_points={"console_scripts": ["invectio=invectio.cli:cli"]},
     install_requires=(Path(HERE) / "requirements.txt").read_text(),
     cmdclass={"test": Test},
