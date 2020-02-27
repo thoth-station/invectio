@@ -34,11 +34,11 @@
         },
         "daiquiri": {
             "hashes": [
-                "sha256:6b235ed15b73b87fd3cc2521aacbb727bf8443a0896dc534b07503841d03cfdb",
-                "sha256:d57b9fd5432933c6e899054eb62cee22eab89f560c8493254d327ec27893c866"
+                "sha256:8a98cba8f6f17823b60f2d42ecef596248cf24a21fbc3e4860ddb6c7aa9420fc",
+                "sha256:daeb251a92975d8f237275d8e8e2add58f8e775994fac718da31d3decdcf3f02"
             ],
             "index": "pypi",
-            "version": "==2.0.0"
+            "version": "==2.1.0"
         },
         "python-json-logger": {
             "hashes": [
