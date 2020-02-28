@@ -50,11 +50,11 @@
     "develop": {
         "astpretty": {
             "hashes": [
-                "sha256:a352e4fb5ca87a3333b9b4c6d00b1938f0719e2c555b206e628012bf02905a1e",
-                "sha256:c827ac3cef040b06283166b6c098e1f639621b065023c6378f22e31a272e9b56"
+                "sha256:7f27633ed885033da8b58666e7079ffff7e8e01869ec1aa66484cb5185ea3aa4",
+                "sha256:e4724bfd753636ba4a84384702e9796e5356969f40af2596d846ce64addde086"
             ],
             "index": "pypi",
-            "version": "==1.7.0"
+            "version": "==2.0.0"
         },
         "attrs": {
             "hashes": [
