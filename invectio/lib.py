@@ -17,14 +17,19 @@
 
 """A library part of Invectio for static analysis of Python sources."""
 
-from pathlib import Path
 import ast
+import distutils.sysconfig as sysconfig
 import glob
 import logging
 import os
 import sys
-import distutils.sysconfig as sysconfig
+from pathlib import Path
+from typing import Any
+from typing import Dict
+from typing import Generator
+from typing import List
 from typing import Set
+from typing import Tuple
 
 import attr
 
@@ -32,11 +37,13 @@ from invectio import __version__ as invectio_version
 
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO)
+_LOGGER.setLevel(
+    logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO
+)
 
 
 @attr.s(slots=True)
-class InvectioVisitor(ast.NodeVisitor):
+class InvectioLibraryUsageVisitor(ast.NodeVisitor):
     """Visitor for capturing imports, nodes and relevant parts to be reported by Invectio."""
 
     imports = attr.ib(type=dict, default=attr.Factory(dict))
@@ -148,6 +155,137 @@ class InvectioVisitor(ast.NodeVisitor):
         return result
 
 
+@attr.s(slots=True)
+class InvectioSymbolsProvidedVisitor:
+    """Visitor for capturing symbols provided.
+
+    The functionality does not retrieve imported symbols.
+    """
+
+    file_name = attr.ib(type=str)
+    include_private = attr.ib(type=bool, default=True)
+    symbols = attr.ib(type=Set[str], factory=set, init=False)
+
+    def visit_FunctionDef(self, function_def: ast.FunctionDef) -> None:
+        """Visit a function definition."""
+        if not self.include_private and function_def.name.startswith("_"):
+            return
+
+        if function_def.name in self.symbols:
+            _LOGGER.warning(
+                "Function definition overrides already defined symbol in file %r: %r",
+                self.file_name,
+                function_def.name,
+            )
+
+        self.symbols.add(function_def.name)
+
+    def visit_AsyncFunctionDef(self, async_function_def: ast.AsyncFunctionDef) -> None:
+        """Visit a async function definition."""
+        if not self.include_private and async_function_def.name.startswith("_"):
+            return
+
+        if async_function_def.name in self.symbols:
+            _LOGGER.warning(
+                "Async function definition overrides already defined symbol in file %r: %r",
+                self.file_name,
+                async_function_def.name,
+            )
+
+        self.symbols.add(async_function_def.name)
+
+    def visit_ClassDef(self, class_def: ast.ClassDef) -> None:
+        """Visit a class definition."""
+        if not self.include_private and class_def.name.startswith("_"):
+            return
+
+        if class_def.name in self.symbols:
+            _LOGGER.warning(
+                "Class definition overrides already defined symbol in file %r: %r",
+                self.file_name,
+                class_def.name,
+            )
+
+        self.symbols.add(class_def.name)
+
+    def visit_Assign(self, assign: ast.Assign) -> None:
+        """Visit a global."""
+
+        def _maybe_add_maybe_log(n: str):
+            if not self.include_private and n.startswith("_"):
+                return
+
+            if n in self.symbols:
+                _LOGGER.warning(
+                    "Target in assignment overrides already defined symbol in file %r: %r",
+                    self.file_name,
+                    n,
+                )
+
+            self.symbols.add(n)
+
+        def _maybe_add(node: ast.AST):
+            if isinstance(node, ast.Name):
+                _maybe_add_maybe_log(node.id)
+            elif isinstance(node, ast.Starred):
+                _maybe_add(node.value)
+            elif isinstance(node, ast.Tuple):
+                for i in node.elts:
+                    _maybe_add(i)
+            elif isinstance(node, (ast.Subscript, ast.Attribute)):
+                # Should be declared beforehand.
+                pass
+            else:
+                _LOGGER.error(
+                    "Unhandled type for target in assignment: %r",
+                    node.__class__.__name__,
+                )
+
+        for target in assign.targets:
+            if isinstance(target, ast.Name):
+                _maybe_add_maybe_log(target.id)
+            else:
+                try:
+                    _maybe_add(target)
+                except RecursionError:
+                    _LOGGER.exception(
+                        f"Failed to parse assign statement in {self.file_name}"
+                    )
+
+    def visit_AnnAssign(self, ann_assign: ast.AugAssign) -> None:
+        """Visit aug assignments."""
+        if not isinstance(ann_assign.target, ast.Name):
+            # Skip subscription and attributes.
+            return
+
+        if not self.include_private and ann_assign.target.id.startswith("_"):
+            return
+
+        if ann_assign.target.id in self.symbols:
+            _LOGGER.warning(
+                "Target in assignment overrides already defined symbol in file %r: %r",
+                self.file_name,
+                ann_assign.target.id,
+            )
+
+        self.symbols.add(ann_assign.target.id)
+
+    def visit(self, module: ast.Module) -> None:
+        """Gather symbols provided by the given ast.
+
+        Note we are traversing top level modules exported. We do not visit nested AST trees.
+        """
+        for item in module.body:
+            handler_name = f"visit_{item.__class__.__name__}"
+            handler = getattr(self, handler_name, None)
+            if handler:
+                handler(item)
+
+    def get_module_report(self) -> Set[str]:
+        """Get report once the traversal is done."""
+        return self.symbols
+
+
 def get_standard_imports() -> Set[str]:
     """Get Python's standard imports."""
     result = set()
@@ -158,11 +296,41 @@ def get_standard_imports() -> Set[str]:
             continue
 
         if name.endswith(".py"):
-            name = name[:-len(".py")]
+            name = name[: -len(".py")]
 
         result.add(name)
 
     return result
+
+
+def _get_python_files(path: str) -> List[str]:
+    """Get Python files for the given path."""
+    if os.path.isfile(path):
+        files = [path]
+    else:
+        files = glob.glob(f"{path}/**/*.py", recursive=True)
+
+    if not files:
+        raise FileNotFoundError(f"No files to process for {str(path)!r}")
+
+    return files
+
+
+def _iter_python_file_ast(
+    path: str, *, ignore_errors: bool
+) -> Generator[Tuple[Path, object], None, None]:
+    """Get AST for all the files given the path."""
+    for python_file in _get_python_files(path):
+        python_file_path = Path(python_file)
+        _LOGGER.debug("Parsing file %r", str(python_file_path.absolute()))
+        try:
+            yield python_file_path, ast.parse(python_file_path.read_text())
+        except Exception:
+            if ignore_errors:
+                _LOGGER.exception("Failed to parse Python file %r", python_file)
+                continue
+
+            raise
 
 
 def gather_library_usage(
@@ -170,17 +338,9 @@ def gather_library_usage(
     *,
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
-    without_builtin_imports: bool = False
-) -> dict:
+    without_builtin_imports: bool = False,
+) -> Dict[str, Any]:
     """Find all sources in the given path and statically extract any library call."""
-    if os.path.isfile(path):
-        files = list((path,))
-    else:
-        files = glob.glob(f"{path}/**/*.py", recursive=True)
-
-    if not files:
-        raise FileNotFoundError(f"No files to process for {str(path)!r}")
-
     standard_imports: Set[str] = set()
     if without_standard_imports:
         standard_imports = get_standard_imports()
@@ -190,19 +350,11 @@ def gather_library_usage(
         builtin_imports = set(sys.builtin_module_names)
 
     report = {}
-    for python_file in files:
-        python_file_path = Path(python_file)
-        _LOGGER.debug("Parsing file %r", str(python_file_path.absolute()))
-        try:
-            file_ast = ast.parse(python_file_path.read_text())
-        except Exception:
-            if ignore_errors:
-                _LOGGER.exception("Failed to parse Python file %r", python_file)
-                continue
 
-            raise
-
-        visitor = InvectioVisitor()
+    for python_file, file_ast in _iter_python_file_ast(
+        path, ignore_errors=ignore_errors
+    ):
+        visitor = InvectioLibraryUsageVisitor()
         visitor.visit(file_ast)
 
         file_report = {}
@@ -219,6 +371,28 @@ def gather_library_usage(
             file_report[module_import] = symbols
 
         report[str(python_file)] = file_report
+
+    return {
+        "report": report,
+        "version": invectio_version,
+    }
+
+
+def gather_symbols_provided(
+    path: str, include_private: bool = False, ignore_errors: bool = False
+) -> Dict[str, Any]:
+    """Gather symbols provided by a library."""
+    report = {}
+
+    for python_file, file_ast in _iter_python_file_ast(
+        path, ignore_errors=ignore_errors
+    ):
+        visitor = InvectioSymbolsProvidedVisitor(
+            file_name=str(python_file), include_private=include_private
+        )
+        visitor.visit(file_ast)
+
+        report[str(python_file)] = sorted(visitor.get_module_report())
 
     return {
         "report": report,

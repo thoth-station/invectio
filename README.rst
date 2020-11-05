@@ -1,8 +1,8 @@
 Invectio
 --------
 
-A simple tool to gather library calls and attribute usage based on static
-analysis of sources of Python applications.
+A simple tool to gather symbols provided or library calls and attribute usage
+based on static analysis of sources of Python applications.
 
 
 Installation
@@ -23,19 +23,23 @@ You can use this library as a CLI tool or as a Python module:
 
 .. code-block:: console
 
-  invectio project-dir/   # To scan all Python files recursively.
-  invectio app.py         # To perform usage gathering just on app.py file.
+  invectio whatprovides project-dir/   # To scan all Python files recursively for symbols provided.
+  invectio whatprovides app.py         # To perform symbols gathering on app.py file.
+
+  invectio whatuses project-dir/       # To scan all Python files recursively for symbols used from libraries.
+  invectio whatprovides app.py         # To perform gather symbols used from libraries on app.py file.
 
 
 .. code-block:: python
 
   from invectio import gather_library_calls
+  from invectio import gather_symbols_provided
 
-  # To scan all Python files recursively.
   result: dict = gather_library_usage("project-dir")
-
-  # To perform usage gathering just on app.py file.
   result: dict = gather_library_usage("app.py")
+
+  result: dict = gather_symbols_provided("project-dir")
+  result: dict = gather_symbols_provided("app.py")
 
 
 Limitations
