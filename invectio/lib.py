@@ -283,7 +283,12 @@ class InvectioSymbolsProvidedVisitor:
 
     def get_module_report(self) -> Set[str]:
         """Get report once the traversal is done."""
-        return self.symbols
+        module_name = (
+            self.file_name[: -len(".py")]
+            if self.file_name.endswith(".py")
+            else self.file_name
+        ).replace("/", ".")
+        return {f"{module_name}.{s}" for s in self.symbols}
 
 
 def get_standard_imports() -> Set[str]:
