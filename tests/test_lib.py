@@ -19,70 +19,89 @@
 import os
 import pytest
 
+from invectio import gather_symbols_provided
 from invectio import gather_library_usage
 from invectio import get_standard_imports
 from invectio import __version__ as invectio_version
 
 
-class TestInvectio:
+class InvectioTestBase:
+    """A base class for implementing test cases."""
+
     @classmethod
     def _get_test_path(cls, test_case_name: str) -> str:
         return str(os.path.join("tests", "data", test_case_name))
 
-    def test_version(self):
+
+class TestLibraryUsage(InvectioTestBase):
+    """A base class for library usage related tests."""
+
+    def test_version(self) -> None:
         file_path = self._get_test_path("empty.py")
         result = gather_library_usage(file_path)
         assert "version" in result
         assert result["version"] == invectio_version
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         file_path = self._get_test_path("empty.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {file_path: {}}
 
-    def test_no_files(self):
+    def test_no_files(self) -> None:
         file_path = self._get_test_path("somenonexistingfileorfilepath")
         with pytest.raises(FileNotFoundError):
             gather_library_usage(file_path)
 
-    def test_app_1(self):
+    def test_app_1(self) -> None:
         file_path = self._get_test_path("app_1.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_app_2(self):
+    def test_app_2(self) -> None:
         file_path = self._get_test_path("app_2.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_app_3(self):
+    def test_app_3(self) -> None:
         file_path = self._get_test_path("app_3.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_app_4(self):
+    def test_app_4(self) -> None:
         file_path = self._get_test_path("app_4.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_app_5(self):
+    def test_app_5(self) -> None:
         file_path = self._get_test_path("app_5.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_app_6(self):
+    def test_app_6(self) -> None:
         file_path = self._get_test_path("app_6.py")
         result = gather_library_usage(file_path)
         assert "report" in result
-        assert result["report"] == {file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}}
+        assert result["report"] == {
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+        }
 
-    def test_lstm(self):
+    def test_lstm(self) -> None:
         file_path = self._get_test_path("lstm.py")
         result = gather_library_usage(file_path)
         assert "report" in result
@@ -111,7 +130,7 @@ class TestInvectio:
             ]
         }
 
-    def test_project_dir(self):
+    def test_project_dir(self) -> None:
         project_path = self._get_test_path("project_dir")
         result = gather_library_usage(project_path)
         assert "report" in result
@@ -133,14 +152,7 @@ class TestInvectio:
             },
         }
 
-    def test_get_standard_imports(self):
-        standard_imports = get_standard_imports()
-        assert isinstance(standard_imports, set)
-        assert len(standard_imports) > 0
-        assert "json" in standard_imports
-        assert "collections" in standard_imports
-
-    def test_standard_imports_detection(self):
+    def test_standard_imports_detection(self) -> None:
         file_path = self._get_test_path("app_7.py")
 
         result = gather_library_usage(file_path, without_standard_imports=True)
@@ -155,23 +167,29 @@ class TestInvectio:
         assert file_path in result["report"]
         assert result["report"][file_path] == {
             "collections": ["collections.deque"],
-            "datetime": ["datetime.datetime.utcnow"]
+            "datetime": ["datetime.datetime.utcnow"],
         }
 
-    def test_without_builtin_and_standard_imports(self):
+    def test_without_builtin_and_standard_imports(self) -> None:
         file_path = self._get_test_path("app_8.py")
 
-        result = gather_library_usage(file_path, without_standard_imports=True, without_builtin_imports=True)
+        result = gather_library_usage(
+            file_path, without_standard_imports=True, without_builtin_imports=True
+        )
 
         assert "version" in result
         assert "report" in result
         assert file_path in result["report"]
-        assert result["report"][file_path] == {'tensorflow': ['tensorflow.python.keras.layers.LSTM']}
+        assert result["report"][file_path] == {
+            "tensorflow": ["tensorflow.python.keras.layers.LSTM"]
+        }
 
-    def test_without_builtin_imports(self):
+    def test_without_builtin_imports(self) -> None:
         file_path = self._get_test_path("app_8.py")
 
-        result = gather_library_usage(file_path, without_standard_imports=False, without_builtin_imports=True)
+        result = gather_library_usage(
+            file_path, without_standard_imports=False, without_builtin_imports=True
+        )
 
         assert "version" in result
         assert "report" in result
@@ -181,3 +199,82 @@ class TestInvectio:
             "signal": {"signal.SIGKILL", "signal.signal"},
             "tensorflow": {"tensorflow.python.keras.layers.LSTM"},
         }
+
+
+class TestSymbolsProvided(InvectioTestBase):
+    """A base class for library usage related tests."""
+
+    def test_lstm_symbols_provided(self) -> None:
+        """Test obtaining symbols provided by a lib."""
+        file_path = self._get_test_path("lstm.py")
+        result = gather_symbols_provided(file_path)
+
+        assert "version" in result
+        assert "report" in result
+        assert file_path in result["report"]
+        assert set(result["report"][file_path]) == {
+            "tests.data.lstm.RNN",
+            "tests.data.lstm.X",
+            "tests.data.lstm.Y",
+            "tests.data.lstm.accuracy",
+            "tests.data.lstm.batch_size",
+            "tests.data.lstm.biases",
+            "tests.data.lstm.correct_pred",
+            "tests.data.lstm.display_step",
+            "tests.data.lstm.init",
+            "tests.data.lstm.learning_rate",
+            "tests.data.lstm.logits",
+            "tests.data.lstm.loss_op",
+            "tests.data.lstm.mnist",
+            "tests.data.lstm.num_classes",
+            "tests.data.lstm.num_hidden",
+            "tests.data.lstm.num_input",
+            "tests.data.lstm.optimizer",
+            "tests.data.lstm.prediction",
+            "tests.data.lstm.timesteps",
+            "tests.data.lstm.train_op",
+            "tests.data.lstm.training_steps",
+            "tests.data.lstm.weights",
+        }
+
+    def test_version(self) -> None:
+        file_path = self._get_test_path("empty.py")
+        result = gather_symbols_provided(file_path)
+        assert "version" in result
+        assert result["version"] == invectio_version
+
+    def test_empty(self) -> None:
+        file_path = self._get_test_path("empty.py")
+        result = gather_symbols_provided(file_path)
+        assert "report" in result
+        assert result["report"] == {file_path: []}
+
+    def test_no_files(self) -> None:
+        file_path = self._get_test_path("somenonexistingfileorfilepath")
+        with pytest.raises(FileNotFoundError):
+            gather_symbols_provided(file_path)
+
+    def test_app9(self) -> None:
+        file_path = self._get_test_path("app_9.py")
+        result = gather_symbols_provided(file_path)
+        assert "report" in result
+        assert str(file_path) in result["report"]
+        assert set(result["report"][str(file_path)]) == {
+            "tests.data.app_9.A",
+            "tests.data.app_9.B",
+            "tests.data.app_9.GLOBAL_VAL",
+            "tests.data.app_9.SomeClass",
+            "tests.data.app_9.X",
+            "tests.data.app_9.Y",
+            "tests.data.app_9.async_signal_handler",
+            "tests.data.app_9.b",
+            "tests.data.app_9.signal_handler",
+        }
+
+
+def test_get_standard_imports() -> None:
+    standard_imports = get_standard_imports()
+    assert isinstance(standard_imports, set)
+    assert len(standard_imports) > 0
+    assert "json" in standard_imports
+    assert "collections" in standard_imports

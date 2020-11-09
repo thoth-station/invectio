@@ -24,4 +24,5 @@ __title__ = "invectio"
 
 
 from .lib import gather_library_usage
+from .lib import gather_symbols_provided
 from .lib import get_standard_imports

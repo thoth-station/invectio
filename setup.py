@@ -51,7 +51,7 @@ def get_version():
 setup(
     name="invectio",
     url="https://github.com/thoth-station/invectio",
-    description="Statically analyze sources and extract information about called library functions in Python applications",
+    description="Statically analyze sources and extract information about called and exported library functions in Python applications",
     long_description=(Path(HERE) / "README.rst").read_text(),
     author="Fridolin Pokorny",
     author_email="fridex.devel@gmail.com",
