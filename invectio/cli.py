@@ -20,7 +20,6 @@
 import sys
 import logging
 import json
-from typing import Optional
 
 import click
 import daiquiri
@@ -97,7 +96,7 @@ def cli(ctx=None, verbose: bool = False,) -> None:
     help="Do not report usage of Python's builtins.",
 )
 def whatuses(
-    path: Optional[str] = None,
+    path: str,
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
@@ -128,9 +127,7 @@ def whatuses(
     help="Ignore syntax or parsing errors for Python files.",
 )
 def whatprovides(
-    path: Optional[str] = None,
-    ignore_errors: bool = False,
-    include_private: bool = False,
+    path: str, ignore_errors: bool = False, include_private: bool = False,
 ) -> None:
     """Gather information about symbols provided by a module or a source file."""
     result = gather_symbols_provided(

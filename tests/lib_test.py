@@ -37,13 +37,13 @@ class TestLibraryUsage(InvectioTestBase):
     """A base class for library usage related tests."""
 
     def test_version(self) -> None:
-        file_path = self._get_test_path("empty.py")
+        file_path = self._get_test_path("empty_test.py")
         result = gather_library_usage(file_path)
         assert "version" in result
         assert result["version"] == invectio_version
 
     def test_empty(self) -> None:
-        file_path = self._get_test_path("empty.py")
+        file_path = self._get_test_path("empty_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {file_path: {}}
@@ -54,7 +54,7 @@ class TestLibraryUsage(InvectioTestBase):
             gather_library_usage(file_path)
 
     def test_app_1(self) -> None:
-        file_path = self._get_test_path("app_1.py")
+        file_path = self._get_test_path("app_1_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -62,7 +62,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_app_2(self) -> None:
-        file_path = self._get_test_path("app_2.py")
+        file_path = self._get_test_path("app_2_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -70,7 +70,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_app_3(self) -> None:
-        file_path = self._get_test_path("app_3.py")
+        file_path = self._get_test_path("app_3_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -78,7 +78,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_app_4(self) -> None:
-        file_path = self._get_test_path("app_4.py")
+        file_path = self._get_test_path("app_4_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -86,7 +86,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_app_5(self) -> None:
-        file_path = self._get_test_path("app_5.py")
+        file_path = self._get_test_path("app_5_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -94,7 +94,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_app_6(self) -> None:
-        file_path = self._get_test_path("app_6.py")
+        file_path = self._get_test_path("app_6_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
@@ -102,7 +102,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_lstm(self) -> None:
-        file_path = self._get_test_path("lstm.py")
+        file_path = self._get_test_path("lstm_test.py")
         result = gather_library_usage(file_path)
         assert "report" in result
         assert file_path in result["report"]
@@ -135,25 +135,25 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(project_path)
         assert "report" in result
         assert result["report"] == {
-            "tests/data/project_dir/main.py": {
+            "tests/data/project_dir/main_test.py": {
                 "flask": ["flask.Flask"],
                 "proj": ["proj.get_model"],
             },
             "tests/data/project_dir/proj/__init__.py": {},
-            "tests/data/project_dir/proj/model.py": {
+            "tests/data/project_dir/proj/model_test.py": {
                 "numpy": ["numpy.random.random"],
                 "tensorflow": [
                     "tensorflow.keras.Sequential",
                     "tensorflow.keras.layers.Dense",
                 ],
             },
-            "tests/data/project_dir/proj/utils.py": {
+            "tests/data/project_dir/proj/utils_test.py": {
                 "datetime": ["datetime.datetime.utcnow"]
             },
         }
 
     def test_standard_imports_detection(self) -> None:
-        file_path = self._get_test_path("app_7.py")
+        file_path = self._get_test_path("app_7_test.py")
 
         result = gather_library_usage(file_path, without_standard_imports=True)
         assert "report" in result
@@ -171,7 +171,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_without_builtin_and_standard_imports(self) -> None:
-        file_path = self._get_test_path("app_8.py")
+        file_path = self._get_test_path("app_8_test.py")
 
         result = gather_library_usage(
             file_path, without_standard_imports=True, without_builtin_imports=True
@@ -185,7 +185,7 @@ class TestLibraryUsage(InvectioTestBase):
         }
 
     def test_without_builtin_imports(self) -> None:
-        file_path = self._get_test_path("app_8.py")
+        file_path = self._get_test_path("app_8_test.py")
 
         result = gather_library_usage(
             file_path, without_standard_imports=False, without_builtin_imports=True
@@ -206,45 +206,45 @@ class TestSymbolsProvided(InvectioTestBase):
 
     def test_lstm_symbols_provided(self) -> None:
         """Test obtaining symbols provided by a lib."""
-        file_path = self._get_test_path("lstm.py")
+        file_path = self._get_test_path("lstm_test.py")
         result = gather_symbols_provided(file_path)
 
         assert "version" in result
         assert "report" in result
         assert file_path in result["report"]
         assert set(result["report"][file_path]) == {
-            "tests.data.lstm.RNN",
-            "tests.data.lstm.X",
-            "tests.data.lstm.Y",
-            "tests.data.lstm.accuracy",
-            "tests.data.lstm.batch_size",
-            "tests.data.lstm.biases",
-            "tests.data.lstm.correct_pred",
-            "tests.data.lstm.display_step",
-            "tests.data.lstm.init",
-            "tests.data.lstm.learning_rate",
-            "tests.data.lstm.logits",
-            "tests.data.lstm.loss_op",
-            "tests.data.lstm.mnist",
-            "tests.data.lstm.num_classes",
-            "tests.data.lstm.num_hidden",
-            "tests.data.lstm.num_input",
-            "tests.data.lstm.optimizer",
-            "tests.data.lstm.prediction",
-            "tests.data.lstm.timesteps",
-            "tests.data.lstm.train_op",
-            "tests.data.lstm.training_steps",
-            "tests.data.lstm.weights",
+            "tests.data.lstm_test.RNN",
+            "tests.data.lstm_test.X",
+            "tests.data.lstm_test.Y",
+            "tests.data.lstm_test.accuracy",
+            "tests.data.lstm_test.batch_size",
+            "tests.data.lstm_test.biases",
+            "tests.data.lstm_test.correct_pred",
+            "tests.data.lstm_test.display_step",
+            "tests.data.lstm_test.init",
+            "tests.data.lstm_test.learning_rate",
+            "tests.data.lstm_test.logits",
+            "tests.data.lstm_test.loss_op",
+            "tests.data.lstm_test.mnist",
+            "tests.data.lstm_test.num_classes",
+            "tests.data.lstm_test.num_hidden",
+            "tests.data.lstm_test.num_input",
+            "tests.data.lstm_test.optimizer",
+            "tests.data.lstm_test.prediction",
+            "tests.data.lstm_test.timesteps",
+            "tests.data.lstm_test.train_op",
+            "tests.data.lstm_test.training_steps",
+            "tests.data.lstm_test.weights",
         }
 
     def test_version(self) -> None:
-        file_path = self._get_test_path("empty.py")
+        file_path = self._get_test_path("empty_test.py")
         result = gather_symbols_provided(file_path)
         assert "version" in result
         assert result["version"] == invectio_version
 
     def test_empty(self) -> None:
-        file_path = self._get_test_path("empty.py")
+        file_path = self._get_test_path("empty_test.py")
         result = gather_symbols_provided(file_path)
         assert "report" in result
         assert result["report"] == {file_path: []}
@@ -255,20 +255,20 @@ class TestSymbolsProvided(InvectioTestBase):
             gather_symbols_provided(file_path)
 
     def test_app9(self) -> None:
-        file_path = self._get_test_path("app_9.py")
+        file_path = self._get_test_path("app_9_test.py")
         result = gather_symbols_provided(file_path)
         assert "report" in result
         assert str(file_path) in result["report"]
         assert set(result["report"][str(file_path)]) == {
-            "tests.data.app_9.A",
-            "tests.data.app_9.B",
-            "tests.data.app_9.GLOBAL_VAL",
-            "tests.data.app_9.SomeClass",
-            "tests.data.app_9.X",
-            "tests.data.app_9.Y",
-            "tests.data.app_9.async_signal_handler",
-            "tests.data.app_9.b",
-            "tests.data.app_9.signal_handler",
+            "tests.data.app_9_test.A",
+            "tests.data.app_9_test.B",
+            "tests.data.app_9_test.GLOBAL_VAL",
+            "tests.data.app_9_test.SomeClass",
+            "tests.data.app_9_test.X",
+            "tests.data.app_9_test.Y",
+            "tests.data.app_9_test.async_signal_handler",
+            "tests.data.app_9_test.b",
+            "tests.data.app_9_test.signal_handler",
         }
 
 

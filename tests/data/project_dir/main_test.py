@@ -4,8 +4,8 @@ from proj import get_model
 application = Flask(__name__)
 
 
-@application.route("/api/v1/model", methods=["GET"])
-def get_model():  # Ignore PyDocStyleBear
+@application.route("/api/v1/model", methods=["GET"])  # noqa: F811
+def get_model():  # noqa: F811
     model = get_model()
     return model.predict([])
 

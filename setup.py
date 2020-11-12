@@ -1,17 +1,22 @@
+"""Setup for python module."""
+
 import sys
 import os
 from pathlib import Path
 from setuptools import setup
 from setuptools import find_packages
-from setuptools.command.test import test as TestCommand
+from setuptools.command.test import test as test_command
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 
 
-class Test(TestCommand):
+class Test(test_command):
+    """Introduce test command to run testsuite using pytest."""
+
     user_options = [("pytest-args=", "a", "Arguments to pass into py.test")]
 
     def initialize_options(self):
+        """Initialize options."""
         super().initialize_options()
         self.pytest_args = [
             "tests/",
@@ -27,17 +32,20 @@ class Test(TestCommand):
         ]
 
     def finalize_options(self):
+        """Finalize options."""
         super().finalize_options()
         self.test_args = []
         self.test_suite = True
 
     def run_tests(self):
+        """Run tests."""
         import pytest
 
         sys.exit(pytest.main(self.pytest_args))
 
 
 def get_version():
+    """Get version."""
     with open(os.path.join("invectio", "__init__.py")) as f:
         content = f.readlines()
 
