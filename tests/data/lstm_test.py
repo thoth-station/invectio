@@ -21,11 +21,9 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
-"""
-To classify images using a recurrent neural network, we consider every image
-row as a sequence of pixels. Because MNIST image shape is 28*28px, we will then
-handle 28 sequences of 28 steps for every sample.
-"""
+# To classify images using a recurrent neural network, we consider every image
+# row as a sequence of pixels. Because MNIST image shape is 28*28px, we will then
+# handle 28 sequences of 28 steps for every sample.
 
 # Training Parameters
 learning_rate = 0.001
@@ -48,7 +46,7 @@ weights = {"out": tf.Variable(tf.random_normal([num_hidden, num_classes]))}
 biases = {"out": tf.Variable(tf.random_normal([num_classes]))}
 
 
-def RNN(x, weights, biases):
+def RNN(x, weights, biases):  # noqa: N802
 
     # Prepare data shape to match `rnn` function requirements
     # Current data input shape: (batch_size, timesteps, n_input)

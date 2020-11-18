@@ -50,7 +50,7 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
     imports_from = attr.ib(type=dict, default=attr.Factory(dict))
     usage = attr.ib(type=dict, default=attr.Factory(dict))
 
-    def visit_Import(self, import_node: ast.Import) -> None:
+    def visit_Import(self, import_node: ast.Import) -> None:  # noqa: N802
         """Visit `import` statements and capture imported modules/names."""
         for alias in import_node.names:
             if alias.asname is not None:
@@ -65,7 +65,7 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
             else:
                 self.imports[alias.name] = alias.name
 
-    def visit_ImportFrom(self, import_from_node: ast.ImportFrom) -> None:
+    def visit_ImportFrom(self, import_from_node: ast.ImportFrom) -> None:  # noqa: N802
         """Visit `import from` statements and capture imported modules/names."""
         if import_from_node.level != 0:
             _LOGGER.debug(
@@ -96,7 +96,7 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
                     "name": alias.name,
                 }
 
-    def visit_Attribute(self, attr_node: ast.Attribute) -> None:
+    def visit_Attribute(self, attr_node: ast.Attribute) -> None:  # noqa: N802
         """Visit a function call in ast."""
         attrs = []
         item = attr_node
@@ -113,7 +113,7 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
         attrs = list(reversed(attrs))
         self._maybe_mark_usage(item.id, attrs)
 
-    def visit_Name(self, name_name: ast.Name) -> None:
+    def visit_Name(self, name_name: ast.Name) -> None:  # noqa: N802
         """Visit a name node in ast."""
         self._maybe_mark_usage(name_name.id, [])
 
@@ -166,7 +166,7 @@ class InvectioSymbolsProvidedVisitor:
     include_private = attr.ib(type=bool, default=True)
     symbols = attr.ib(type=Set[str], factory=set, init=False)
 
-    def visit_FunctionDef(self, function_def: ast.FunctionDef) -> None:
+    def visit_FunctionDef(self, function_def: ast.FunctionDef) -> None:  # noqa: N802
         """Visit a function definition."""
         if not self.include_private and function_def.name.startswith("_"):
             return
@@ -180,7 +180,9 @@ class InvectioSymbolsProvidedVisitor:
 
         self.symbols.add(function_def.name)
 
-    def visit_AsyncFunctionDef(self, async_function_def: ast.AsyncFunctionDef) -> None:
+    def visit_AsyncFunctionDef(  # noqa: N802
+        self, async_function_def: ast.AsyncFunctionDef
+    ) -> None:  # noqa: N802
         """Visit a async function definition."""
         if not self.include_private and async_function_def.name.startswith("_"):
             return
@@ -194,7 +196,7 @@ class InvectioSymbolsProvidedVisitor:
 
         self.symbols.add(async_function_def.name)
 
-    def visit_ClassDef(self, class_def: ast.ClassDef) -> None:
+    def visit_ClassDef(self, class_def: ast.ClassDef) -> None:  # noqa: N802
         """Visit a class definition."""
         if not self.include_private and class_def.name.startswith("_"):
             return
@@ -208,7 +210,7 @@ class InvectioSymbolsProvidedVisitor:
 
         self.symbols.add(class_def.name)
 
-    def visit_Assign(self, assign: ast.Assign) -> None:
+    def visit_Assign(self, assign: ast.Assign) -> None:  # noqa: N802
         """Visit a global."""
 
         def _maybe_add_maybe_log(n: str):
@@ -252,7 +254,7 @@ class InvectioSymbolsProvidedVisitor:
                         f"Failed to parse assign statement in {self.file_name}"
                     )
 
-    def visit_AnnAssign(self, ann_assign: ast.AugAssign) -> None:
+    def visit_AnnAssign(self, ann_assign: ast.AugAssign) -> None:  # noqa: N802
         """Visit aug assignments."""
         if not isinstance(ann_assign.target, ast.Name):
             # Skip subscription and attributes.
@@ -323,7 +325,7 @@ def _get_python_files(path: str) -> List[str]:
 
 def _iter_python_file_ast(
     path: str, *, ignore_errors: bool
-) -> Generator[Tuple[Path, object], None, None]:
+) -> Generator[Tuple[Path, ast.Module], None, None]:
     """Get AST for all the files given the path."""
     for python_file in _get_python_files(path):
         python_file_path = Path(python_file)

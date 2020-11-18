@@ -3,5 +3,5 @@ from datetime import datetime
 
 
 def now():
-    q = deque()
+    q = deque()  # noqa: F841
     return datetime.utcnow()
