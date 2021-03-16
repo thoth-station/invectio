@@ -58,7 +58,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_app_2(self) -> None:
@@ -66,7 +66,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_app_3(self) -> None:
@@ -74,7 +74,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_app_4(self) -> None:
@@ -82,7 +82,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_app_5(self) -> None:
@@ -90,7 +90,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_app_6(self) -> None:
@@ -98,7 +98,7 @@ class TestLibraryUsage(InvectioTestBase):
         result = gather_library_usage(file_path)
         assert "report" in result
         assert result["report"] == {
-            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]}
+            file_path: {"tensorflow": ["tensorflow.layers.conv2d"]},
         }
 
     def test_lstm(self) -> None:
@@ -127,7 +127,7 @@ class TestLibraryUsage(InvectioTestBase):
                 "tensorflow.reduce_mean",
                 "tensorflow.train.GradientDescentOptimizer",
                 "tensorflow.unstack",
-            ]
+            ],
         }
 
     def test_project_dir(self) -> None:
@@ -148,7 +148,7 @@ class TestLibraryUsage(InvectioTestBase):
                 ],
             },
             "tests/data/project_dir/proj/utils_test.py": {
-                "datetime": ["datetime.datetime.utcnow"]
+                "datetime": ["datetime.datetime.utcnow"],
             },
         }
 
@@ -174,21 +174,25 @@ class TestLibraryUsage(InvectioTestBase):
         file_path = self._get_test_path("app_8_test.py")
 
         result = gather_library_usage(
-            file_path, without_standard_imports=True, without_builtin_imports=True
+            file_path,
+            without_standard_imports=True,
+            without_builtin_imports=True,
         )
 
         assert "version" in result
         assert "report" in result
         assert file_path in result["report"]
         assert result["report"][file_path] == {
-            "tensorflow": ["tensorflow.python.keras.layers.LSTM"]
+            "tensorflow": ["tensorflow.python.keras.layers.LSTM"],
         }
 
     def test_without_builtin_imports(self) -> None:
         file_path = self._get_test_path("app_8_test.py")
 
         result = gather_library_usage(
-            file_path, without_standard_imports=False, without_builtin_imports=True
+            file_path,
+            without_standard_imports=False,
+            without_builtin_imports=True,
         )
 
         assert "version" in result
