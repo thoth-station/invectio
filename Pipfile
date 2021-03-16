@@ -7,8 +7,11 @@ verify_ssl = true
 pytest = "*"
 pytest-timeout = "*"
 pytest-cov = "*"
-astpretty = "*"
+hypothesis-auto = "*"
+hypothesis = "*"
 pytest-mypy = "*"
+mypy = "*"
+pre-commit = "==2.0.1"
 
 [packages]
 click = "*"
