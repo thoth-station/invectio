@@ -1,17 +1,24 @@
 ---
 repos:
-  - repo: git://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.1
+  - repo: git://github.com/asottile/add-trailing-comma
+    rev: v2.1.0
     hooks:
-      - id: remove-tabs
+      - id: add-trailing-comma
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v2.0.0
+    rev: v3.4.0
     hooks:
       - id: trailing-whitespace
       - id: check-merge-conflict
       - id: end-of-file-fixer
-      - id: name-tests-test
       - id: check-added-large-files
       - id: check-byte-order-marker
       - id: check-case-conflict
@@ -28,34 +35,21 @@ repos:
       - id: pydocstyle
         exclude: '^tests*'
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-      - id: check-toml
-      - id: check-yaml
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.770
+    rev: v0.812
     hooks:
       - id: mypy
         exclude: '^(docs|tasks|tests)|setup\.py'
         args: [--ignore-missing-imports]
+        additional_dependencies: [attrs~=19.3]
 
   - repo: https://github.com/psf/black
-    rev: 19.10b0
+    rev: 20.8b1
     hooks:
       - id: black
 
-  # Enable this in repositories with python packages.
-  # - repo: https://github.com/mgedmin/check-manifest
-  #   rev: '0.39'
-  #   hooks:
-  #     - id: check-manifest
-
   - repo: https://gitlab.com/PyCQA/flake8
-    rev: '3.7.8'
+    rev: '3.8.4'
     hooks:
       - id: flake8
         additional_dependencies: ['pep8-naming']

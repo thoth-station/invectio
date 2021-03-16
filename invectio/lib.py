@@ -38,7 +38,7 @@ from invectio import __version__ as invectio_version
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(
-    logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO
+    logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO,
 )
 
 
@@ -181,7 +181,8 @@ class InvectioSymbolsProvidedVisitor:
         self.symbols.add(function_def.name)
 
     def visit_AsyncFunctionDef(  # noqa: N802
-        self, async_function_def: ast.AsyncFunctionDef
+        self,
+        async_function_def: ast.AsyncFunctionDef,
     ) -> None:  # noqa: N802
         """Visit a async function definition."""
         if not self.include_private and async_function_def.name.startswith("_"):
@@ -251,7 +252,7 @@ class InvectioSymbolsProvidedVisitor:
                     _maybe_add(target)
                 except RecursionError:
                     _LOGGER.exception(
-                        f"Failed to parse assign statement in {self.file_name}"
+                        f"Failed to parse assign statement in {self.file_name}",
                     )
 
     def visit_AnnAssign(self, ann_assign: ast.AugAssign) -> None:  # noqa: N802
@@ -359,7 +360,8 @@ def gather_library_usage(
     report = {}
 
     for python_file, file_ast in _iter_python_file_ast(
-        path, ignore_errors=ignore_errors
+        path,
+        ignore_errors=ignore_errors,
     ):
         visitor = InvectioLibraryUsageVisitor()
         visitor.visit(file_ast)
@@ -386,16 +388,20 @@ def gather_library_usage(
 
 
 def gather_symbols_provided(
-    path: str, include_private: bool = False, ignore_errors: bool = False
+    path: str,
+    include_private: bool = False,
+    ignore_errors: bool = False,
 ) -> Dict[str, Any]:
     """Gather symbols provided by a library."""
     report = {}
 
     for python_file, file_ast in _iter_python_file_ast(
-        path, ignore_errors=ignore_errors
+        path,
+        ignore_errors=ignore_errors,
     ):
         visitor = InvectioSymbolsProvidedVisitor(
-            file_name=str(python_file), include_private=include_private
+            file_name=str(python_file),
+            include_private=include_private,
         )
         visitor.visit(file_ast)
 

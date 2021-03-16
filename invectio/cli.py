@@ -63,7 +63,7 @@ def _print_version(ctx, _, value):
     expose_value=False,
     help="Print Invectio version and exit.",
 )
-def cli(ctx=None, verbose: bool = False,) -> None:
+def cli(ctx=None, verbose: bool = False) -> None:
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
         ctx.auto_envvar_prefix = "INVECTIO"
@@ -127,11 +127,15 @@ def whatuses(
     help="Ignore syntax or parsing errors for Python files.",
 )
 def whatprovides(
-    path: str, ignore_errors: bool = False, include_private: bool = False,
+    path: str,
+    ignore_errors: bool = False,
+    include_private: bool = False,
 ) -> None:
     """Gather information about symbols provided by a module or a source file."""
     result = gather_symbols_provided(
-        path, ignore_errors=ignore_errors, include_private=include_private
+        path,
+        ignore_errors=ignore_errors,
+        include_private=include_private,
     )
     click.echo(json.dumps(result, indent=2, sort_keys=True))
 

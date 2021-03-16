@@ -70,7 +70,7 @@ prediction = tf.nn.softmax(logits)
 
 # Define loss and optimizer
 loss_op = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y)
+    tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=Y),
 )
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
 train_op = optimizer.minimize(loss_op)
@@ -97,7 +97,8 @@ with tf.Session() as sess:
         if step % display_step == 0 or step == 1:
             # Calculate batch loss and accuracy
             loss, acc = sess.run(
-                [loss_op, accuracy], feed_dict={X: batch_x, Y: batch_y}
+                [loss_op, accuracy],
+                feed_dict={X: batch_x, Y: batch_y},
             )
             print(
                 "Step "
@@ -105,7 +106,7 @@ with tf.Session() as sess:
                 + ", Minibatch Loss= "
                 + "{:.4f}".format(loss)
                 + ", Training Accuracy= "
-                + "{:.3f}".format(acc)
+                + "{:.3f}".format(acc),
             )
 
     print("Optimization Finished!")
@@ -115,5 +116,6 @@ with tf.Session() as sess:
     test_data = mnist.test.images[:test_len].reshape((-1, timesteps, num_input))
     test_label = mnist.test.labels[:test_len]
     print(
-        "Testing Accuracy:", sess.run(accuracy, feed_dict={X: test_data, Y: test_label})
+        "Testing Accuracy:",
+        sess.run(accuracy, feed_dict={X: test_data, Y: test_label}),
     )
