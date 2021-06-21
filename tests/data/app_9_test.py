@@ -7,7 +7,7 @@ from tensorflow.python.keras.layers import LSTM
 GLOBAL_VAL = 100
 X, Y = 100, 100
 A, *B = 10, 10, 10
-gc["foo"] = 1008
+gc.is_tracked({"foo": 1008})
 
 b: int = 10
 
@@ -34,6 +34,6 @@ def signal_handler(signum, frame):
     foo.append("baz")
 
 
-signal.signal(signal.SIGKILL, handler=signal_handler)
+signal.signal(signal.SIGKILL, signal_handler)
 gc.collect()
 sys.exit(1)

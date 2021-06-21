@@ -20,7 +20,7 @@ class Test(test_command):
         super().initialize_options()
         self.pytest_args = [
             "tests/",
-            "--timeout=2",
+            "--timeout=5",
             "--cov=./invectio",
             "--mypy",
             "--capture=no",
