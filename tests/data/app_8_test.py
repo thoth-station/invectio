@@ -11,6 +11,6 @@ def signal_handler(signum, frame):
     foo.append("baz")
 
 
-signal.signal(signal.SIGKILL, handler=signal_handler)
+signal.signal(signal.SIGKILL, signal_handler)
 gc.collect()
 sys.exit(1)
