@@ -53,6 +53,22 @@ class TestLibraryUsage(InvectioTestBase):
         with pytest.raises(FileNotFoundError):
             gather_library_usage(file_path)
 
+    def test_app_0(self) -> None:
+        file_path = self._get_test_path("app_0.py")
+        result = gather_library_usage(file_path)
+        assert "report" in result
+        assert result["report"] == {
+            file_path: {
+                "__builtins__": [
+                    "__builtins__.ValueError",
+                    "__builtins__.any",
+                    "__builtins__.eval",
+                    "__builtins__.exec",
+                    "__builtins__.frozenset",
+                ]
+            },
+        }
+
     def test_app_1(self) -> None:
         file_path = self._get_test_path("app_1.py")
         result = gather_library_usage(file_path)

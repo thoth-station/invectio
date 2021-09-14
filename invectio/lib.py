@@ -41,6 +41,155 @@ _LOGGER.setLevel(
     logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO
 )
 
+_BUILTINS = frozenset(
+    {
+        "ArithmeticError",
+        "AssertionError",
+        "AttributeError",
+        "BaseException",
+        "BlockingIOError",
+        "BrokenPipeError",
+        "BufferError",
+        "BytesWarning",
+        "ChildProcessError",
+        "ConnectionAbortedError",
+        "ConnectionError",
+        "ConnectionRefusedError",
+        "ConnectionResetError",
+        "DeprecationWarning",
+        "EOFError",
+        "Ellipsis",
+        "EnvironmentError",
+        "Exception",
+        "False",
+        "FileExistsError",
+        "FileNotFoundError",
+        "FloatingPointError",
+        "FutureWarning",
+        "GeneratorExit",
+        "IOError",
+        "ImportError",
+        "ImportWarning",
+        "IndentationError",
+        "IndexError",
+        "InterruptedError",
+        "IsADirectoryError",
+        "KeyError",
+        "KeyboardInterrupt",
+        "LookupError",
+        "MemoryError",
+        "ModuleNotFoundError",
+        "NameError",
+        "None",
+        "NotADirectoryError",
+        "NotImplemented",
+        "NotImplementedError",
+        "OSError",
+        "OverflowError",
+        "PendingDeprecationWarning",
+        "PermissionError",
+        "ProcessLookupError",
+        "RecursionError",
+        "ReferenceError",
+        "ResourceWarning",
+        "RuntimeError",
+        "RuntimeWarning",
+        "StopAsyncIteration",
+        "StopIteration",
+        "SyntaxError",
+        "SyntaxWarning",
+        "SystemError",
+        "SystemExit",
+        "TabError",
+        "TimeoutError",
+        "True",
+        "TypeError",
+        "UnboundLocalError",
+        "UnicodeDecodeError",
+        "UnicodeEncodeError",
+        "UnicodeError",
+        "UnicodeTranslateError",
+        "UnicodeWarning",
+        "UserWarning",
+        "ValueError",
+        "Warning",
+        "ZeroDivisionError",
+        "abs",
+        "all",
+        "any",
+        "ascii",
+        "bin",
+        "bool",
+        "breakpoint",
+        "bytearray",
+        "bytes",
+        "callable",
+        "chr",
+        "classmethod",
+        "compile",
+        "complex",
+        "copyright",
+        "credits",
+        "delattr",
+        "dict",
+        "dir",
+        "divmod",
+        "enumerate",
+        "eval",
+        "exec",
+        "exit",
+        "filter",
+        "float",
+        "format",
+        "frozenset",
+        "getattr",
+        "globals",
+        "hasattr",
+        "hash",
+        "help",
+        "hex",
+        "id",
+        "input",
+        "int",
+        "isinstance",
+        "issubclass",
+        "iter",
+        "len",
+        "license",
+        "list",
+        "locals",
+        "map",
+        "max",
+        "memoryview",
+        "min",
+        "next",
+        "object",
+        "oct",
+        "open",
+        "ord",
+        "pow",
+        "print",
+        "property",
+        "quit",
+        "range",
+        "repr",
+        "reversed",
+        "round",
+        "set",
+        "setattr",
+        "slice",
+        "sorted",
+        "staticmethod",
+        "str",
+        "sum",
+        "super",
+        "tuple",
+        "type",
+        "vars",
+        "zip",
+    }
+)
+
 
 @attr.s(slots=True)
 class InvectioLibraryUsageVisitor(ast.NodeVisitor):
@@ -136,6 +285,7 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
                     self.usage[module] = set()
 
                 self.usage[module].add(used)
+
             if import_type in self.imports:
                 module = self.imports[import_type].split(".", maxsplit=1)[0]
                 if module not in self.usage:
@@ -143,6 +293,21 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
 
                 used = module + "." + ".".join(attrs)
                 self.usage[module].add(used)
+
+            if import_type in _BUILTINS:
+                if "__builtins__" not in self.usage:
+                    self.usage["__builtins__"] = set()
+
+                self.usage["__builtins__"].add(f"__builtins__.{import_type}")
+
+            if (
+                import_type.startswith("__builtins__.")
+                and import_type[len("__builtins__.") :] in _BUILTINS
+            ):
+                if "__builtins__" not in self.usage:
+                    self.usage["__builtins__"] = set()
+
+                self.usage["__builtins__"].add(import_type)
 
     def get_module_report(self) -> dict:
         """Get raw module report after the library scan discovery."""

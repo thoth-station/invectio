@@ -64,7 +64,10 @@ def _print_version(ctx, _, value):
     expose_value=False,
     help="Print Invectio version and exit.",
 )
-def cli(ctx=None, verbose: bool = False,) -> None:
+def cli(
+    ctx=None,
+    verbose: bool = False,
+) -> None:
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
         ctx.auto_envvar_prefix = "INVECTIO"
