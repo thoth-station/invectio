@@ -53,6 +53,28 @@ class TestLibraryUsage(InvectioTestBase):
         with pytest.raises(FileNotFoundError):
             gather_library_usage(file_path)
 
+    def test_app_0(self) -> None:
+        file_path = self._get_test_path("app_0_test.py")
+        result = gather_library_usage(file_path)
+        assert "report" in result
+        assert result["report"] == {
+            file_path: {
+                "__builtins__": [
+                    "__builtins__.ValueError",
+                    "__builtins__.any",
+                    "__builtins__.eval",
+                    "__builtins__.exec",
+                    "__builtins__.frozenset",
+                ],
+            },
+        }
+
+        result = gather_library_usage(file_path, without_builtins=True)
+        assert "report" in result
+        assert result["report"] == {
+            file_path: {},
+        }
+
     def test_app_1(self) -> None:
         file_path = self._get_test_path("app_1_test.py")
         result = gather_library_usage(file_path)
@@ -108,6 +130,11 @@ class TestLibraryUsage(InvectioTestBase):
         assert file_path in result["report"]
         assert len(result["report"].keys()) == 1
         assert result["report"][file_path] == {
+            "__builtins__": [
+                "__builtins__.print",
+                "__builtins__.range",
+                "__builtins__.str",
+            ],
             "tensorflow": [
                 "tensorflow.Session",
                 "tensorflow.Variable",
@@ -136,6 +163,7 @@ class TestLibraryUsage(InvectioTestBase):
         assert "report" in result
         assert result["report"] == {
             "tests/data/project_dir/main_test.py": {
+                "__builtins__": ["__builtins__.__name__"],
                 "flask": ["flask.Flask"],
                 "proj": ["proj.get_model"],
             },
