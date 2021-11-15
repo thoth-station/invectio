@@ -27,7 +27,7 @@ You can use this library as a CLI tool or as a Python module:
   invectio whatprovides app.py         # To perform symbols gathering on app.py file.
 
   invectio whatuses project-dir/       # To scan all Python files recursively for symbols used from libraries.
-  invectio whatprovides app.py         # To perform gather symbols used from libraries on app.py file.
+  invectio whatuses app.py             # To perform gather symbols used from libraries on app.py file.
 
 
 .. code-block:: python
