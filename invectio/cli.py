@@ -63,7 +63,10 @@ def _print_version(ctx, _, value):
     expose_value=False,
     help="Print Invectio version and exit.",
 )
-def cli(ctx=None, verbose: bool = False) -> None:
+def cli(
+    ctx=None,
+    verbose: bool = False,
+) -> None:
     """Statically analyze sources and extract information about called library functions in Python applications."""
     if ctx:
         ctx.auto_envvar_prefix = "INVECTIO"
@@ -93,6 +96,12 @@ def cli(ctx=None, verbose: bool = False) -> None:
     "--without-builtin-imports/--with-builtin-imports",
     is_flag=True,
     show_default=True,
+    help="Do not report usage of Python's standard library.",
+)
+@click.option(
+    "--without-builtins/--with-builtins",
+    is_flag=True,
+    show_default=True,
     help="Do not report usage of Python's builtins.",
 )
 def whatuses(
@@ -100,6 +109,7 @@ def whatuses(
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
+    without_builtins: bool = False,
 ) -> None:
     """Gather information about symbol usage by a module or a source file."""
     result = gather_library_usage(
@@ -107,6 +117,7 @@ def whatuses(
         ignore_errors=ignore_errors,
         without_standard_imports=without_standard_imports,
         without_builtin_imports=without_builtin_imports,
+        without_builtins=without_builtins,
     )
     click.echo(json.dumps(result, indent=2, sort_keys=True))
 

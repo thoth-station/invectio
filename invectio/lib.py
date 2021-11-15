@@ -18,13 +18,16 @@
 """A library part of Invectio for static analysis of Python sources."""
 
 import ast
+import builtins
 import distutils.sysconfig as sysconfig
 import glob
 import logging
 import os
 import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
+from typing import DefaultDict
 from typing import Dict
 from typing import Generator
 from typing import List
@@ -40,15 +43,20 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(
     logging.DEBUG if bool(int(os.getenv("INVECTIO_VERBOSE", 0))) else logging.INFO,
 )
+_BUILTINS = frozenset(dir(builtins))
 
 
 @attr.s(slots=True)
 class InvectioLibraryUsageVisitor(ast.NodeVisitor):
     """Visitor for capturing imports, nodes and relevant parts to be reported by Invectio."""
 
+    without_builtins = attr.ib(type=bool, default=False)
     imports = attr.ib(type=dict, default=attr.Factory(dict))
     imports_from = attr.ib(type=dict, default=attr.Factory(dict))
-    usage = attr.ib(type=dict, default=attr.Factory(dict))
+    usage = attr.ib(
+        type=DefaultDict[str, Set[str]],
+        default=attr.Factory(lambda: defaultdict(set)),
+    )
 
     def visit_Import(self, import_node: ast.Import) -> None:  # noqa: N802
         """Visit `import` statements and capture imported modules/names."""
@@ -132,17 +140,21 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
                 if attrs:
                     used += "." + ".".join(attrs)
 
-                if module not in self.usage:
-                    self.usage[module] = set()
-
                 self.usage[module].add(used)
+
             if import_type in self.imports:
                 module = self.imports[import_type].split(".", maxsplit=1)[0]
-                if module not in self.usage:
-                    self.usage[module] = set()
-
                 used = module + "." + ".".join(attrs)
                 self.usage[module].add(used)
+
+            if not self.without_builtins:
+                if import_type in _BUILTINS:
+                    self.usage["__builtins__"].add(f"__builtins__.{import_type}")
+                elif (
+                    import_type.startswith("__builtins__.")
+                    and import_type[len("__builtins__.") :] in _BUILTINS
+                ):
+                    self.usage["__builtins__"].add(import_type)
 
     def get_module_report(self) -> dict:
         """Get raw module report after the library scan discovery."""
@@ -347,6 +359,7 @@ def gather_library_usage(
     ignore_errors: bool = False,
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
+    without_builtins: bool = False,
 ) -> Dict[str, Any]:
     """Find all sources in the given path and statically extract any library call."""
     standard_imports: Set[str] = set()
@@ -363,7 +376,7 @@ def gather_library_usage(
         path,
         ignore_errors=ignore_errors,
     ):
-        visitor = InvectioLibraryUsageVisitor()
+        visitor = InvectioLibraryUsageVisitor(without_builtins=without_builtins)
         visitor.visit(file_ast)
 
         file_report = {}
