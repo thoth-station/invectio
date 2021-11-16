@@ -66,6 +66,9 @@ setup(
     maintainer="Fridolin Pokorny",
     maintainer_email="fridex.devel@gmail.com",
     license="GPLv3+",
+    package_data={
+        "invectio": ["py.typed"],
+    },
     classifiers=[
         "Operating System :: POSIX :: Linux",
         "Topic :: Software Development",
