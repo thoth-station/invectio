@@ -155,11 +155,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:4e432e16f7e5d6a25f35bcd796ccde79f1ba260cab629f47c30a47678c49d0e8",
-                "sha256:e69cd63e6af23ad9d94aff0c4b884b6c7689ac7975a9860365124152e944d5e7"
+                "sha256:60b5b03de4219d0ead26d481e4029941024b9cbeb4ef99cc285c5fafa920e908",
+                "sha256:8e126f2f59d81f32a5c6866df2558b119938515ed9cd6c9a044ef6a74e649ee5"
             ],
             "index": "pypi",
-            "version": "==6.24.6"
+            "version": "==6.25.0"
         },
         "hypothesis-auto": {
             "hashes": [
@@ -171,11 +171,11 @@
         },
         "identify": {
             "hashes": [
-                "sha256:12f204544d1b718d5be2c82d95d30ff163614d7e15ae180bfbe923614a5f9a9f",
-                "sha256:eda2c9ad2d53fcc1ff110fc9816206a9ec236a5cc8469f815fc8d8193d58363a"
+                "sha256:a33ae873287e81651c7800ca309dc1f84679b763c9c8b30680e16fbfa82f0107",
+                "sha256:eba31ca80258de6bb51453084bff4a923187cd2193b9c13710f2516ab30732cc"
             ],
             "markers": "python_full_version >= '3.6.1'",
-            "version": "==2.3.7"
+            "version": "==2.4.0"
         },
         "iniconfig": {
             "hashes": [
