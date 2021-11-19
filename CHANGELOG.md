@@ -1,4 +1,28 @@
 
+## Release 0.2.0 (2021-11-19T02:53:38)
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* Adjust year in headers
+* Provide library __all__
+* Library is typed
+* Add Python 3.8 and Python 3.9 to trove classifiers
+* Minor README fix
+* Fix parameter in tests
+* Increase timeout for tests
+* Detect builtins used
+* Update GitHub templates
+* :arrow_up: updating the pytest and mypy fixes
+* :hatched_chick: update the prow resource limits
+* :arrow_up: Automatic update of dependencies by Kebechet (#103)
+* Add missing github templates
+* Add dev packages
+* remove zuul
+* Add Prow tests
+* add .aicoe-ci.yaml (#97)
+* bump python version (#95)
+* setup pre-commit (#93)
+* :pushpin: Automatic update of dependency pytest-mypy from 0.7.0 to 0.8.0 (#94)
+
 ## Release 0.0.3 (2019-06-14T10:17:59)
 * Fix version handling
 * Fix error during installation
