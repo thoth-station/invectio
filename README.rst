@@ -72,7 +72,7 @@ To create a dev environment, clone the invectio repo and install all the depende
 
 .. code-block:: console
 
-  git clone https:://github.com/thoth-station/invectio && cd invectio
+  git clone https://github.com/thoth-station/invectio && cd invectio
   pipenv install --dev
 
 To perform checks against unit tests present in the `tests/` directory,
