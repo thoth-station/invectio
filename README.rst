@@ -4,6 +4,9 @@ Invectio
 A simple tool to gather symbols provided or library calls and attribute usage
 based on static analysis of sources of Python applications.
 
+See [the linked article describing this
+tool](https://developers.redhat.com/articles/2022/01/05/extracting-information-python-source-code).
+
 
 Installation
 ============
