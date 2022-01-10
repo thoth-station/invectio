@@ -84,9 +84,15 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
 
         for alias in import_from_node.names:
             if alias.asname:
-                if alias.asname in self.imports_from:
+                if (
+                    alias.asname in self.imports_from
+                    and self.imports_from[alias.asname]["module"]
+                    != import_from_node.module
+                ):
                     _LOGGER.warning(
-                        "Multiple imports for %r found, detection might give misleading results",
+                        "Multiple imports for %r found (%r and %r), detection might give misleading results",
+                        import_from_node.module,
+                        self.imports_from[alias.asname]["module"],
                         alias.asname,
                     )
                 self.imports_from[alias.asname] = {
@@ -94,9 +100,15 @@ class InvectioLibraryUsageVisitor(ast.NodeVisitor):
                     "name": alias.name,
                 }
             else:
-                if alias.name in self.imports_from:
+                if (
+                    alias.name in self.imports_from
+                    and self.imports_from[alias.name]["module"]
+                    != import_from_node.module
+                ):
                     _LOGGER.warning(
-                        "Multiple imports for name %r found, detection might give misleading results",
+                        "Multiple imports for %r found (%r and %r), detection might give misleading results",
+                        import_from_node.module,
+                        self.imports_from[alias.name]["module"],
                         alias.name,
                     )
                 self.imports_from[alias.name] = {
