@@ -1,4 +1,13 @@
 
+## Release 0.2.2 (2022-08-10T14:22:42)
+* 4839c48 Update OWNERS
+* 7afc77c Allow ignoring subdirectories when gathering library usage
+* c04495b Autoupdate pre-commit hooks
+* 713f0fb Upgrade pre-commit image version
+* 306f1ff :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
+* 7782ade Enable TLS verification
+* c7922f0 Add template for delivering a missing module
+
 ## Release 0.2.1 (2022-01-11T14:42:48)
 * Warn about duplicate imports only if source modules differ
 * :arrow_up: Automatic update of dependencies by Kebechet for the ubi8 environment
