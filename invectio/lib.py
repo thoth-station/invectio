@@ -343,7 +343,7 @@ def _get_python_files(path: str, ignored_subdirs: list = []) -> List[str]:
         files = [
             file
             for file in glob.glob(f"{path}/**/*.py", recursive=True)
-            if file not in ignored_subdirs
+            if all(f not in ignored_subdirs for f in file.split("/"))
         ]
 
     if not files:
