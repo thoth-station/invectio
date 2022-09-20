@@ -35,7 +35,7 @@ You can use this library as a CLI tool or as a Python module:
 
 .. code-block:: python
 
-  from invectio import gather_library_calls
+  from invectio import gather_library_usage
   from invectio import gather_symbols_provided
 
   result: dict = gather_library_usage("project-dir")
