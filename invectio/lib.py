@@ -335,16 +335,12 @@ def get_standard_imports() -> Set[str]:
     return result
 
 
-def _get_python_files(path: str, ignored_subdirs: list = []) -> List[str]:
+def _get_python_files(path: str) -> List[str]:
     """Get Python files for the given path."""
     if os.path.isfile(path):
         files = [path]
     else:
-        files = [
-            file
-            for file in glob.glob(f"{path}/**/*.py", recursive=True)
-            if file not in ignored_subdirs
-        ]
+        files = glob.glob(f"{path}/**/*.py", recursive=True)
 
     if not files:
         raise FileNotFoundError(f"No files to process for {str(path)!r}")
@@ -353,10 +349,10 @@ def _get_python_files(path: str, ignored_subdirs: list = []) -> List[str]:
 
 
 def _iter_python_file_ast(
-    path: str, *, ignore_errors: bool, ignored_subdirs: list = []
+    path: str, *, ignore_errors: bool
 ) -> Generator[Tuple[Path, ast.Module], None, None]:
     """Get AST for all the files given the path."""
-    for python_file in _get_python_files(path, ignored_subdirs):
+    for python_file in _get_python_files(path):
         python_file_path = Path(python_file)
         _LOGGER.debug("Parsing file %r", str(python_file_path.absolute()))
         try:
@@ -373,7 +369,6 @@ def gather_library_usage(
     path: str,
     *,
     ignore_errors: bool = False,
-    ignored_subdirs: list = [],
     without_standard_imports: bool = False,
     without_builtin_imports: bool = False,
     without_builtins: bool = False,
@@ -392,7 +387,6 @@ def gather_library_usage(
     for python_file, file_ast in _iter_python_file_ast(
         path,
         ignore_errors=ignore_errors,
-        ignored_subdirs=ignored_subdirs,
     ):
         visitor = InvectioLibraryUsageVisitor(without_builtins=without_builtins)
         visitor.visit(file_ast)
