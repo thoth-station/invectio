@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "invectio"
+urls = { url = "https://github.com/thoth-station/invectio" }
+description = "Statically analyze sources and extract information about called and exported library functions in Python applications"
+readme = "README.rst"
+authors = [
+    { name = "Fridolin Pokorny", email = "fridex.devel@gmail.com" }
+]
+maintainers = [
+    { name = "Fridolin Pokorny", email = "fridex.devel@gmail.com" }
+]
+license = { text = "GPLv3+" }
+classifiers = [
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Software Development",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9"
+]
+keywords = [ "ast", "source", "code", "analysis", "thoth", "library" ]
+dynamic = [ "version", "dependencies" ]
+
+[project.scripts]
+invectio = "invectio.cli:cli"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.dynamic]
+version = {attr = "invectio.__version__"}
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.package-data]
+invectio = ["py.typed"]
+
+[tool.setuptools.packages.find]
+namespaces = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "--timeout=60 --cov --mypy --capture=no --verbose --ignore=tests/data/ -l -s -vv"
+testpaths = [
+    "tests"
+]
+
+[tool.coverage.run]
+source = ["invectio"]
